@@ -1,24 +1,68 @@
 services:
   rabbitmq:
-    image: rabbitmq:latest
-    container_name: shop-rabbitmq
+    image: rabbitmq:4-management
+    container_name: workflow_rmq
+    networks:
+      - TaskflowNetwork
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_port_listener 5672" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
   publisher:
+    container_name: workflow_publisher
     build:
       context: .
       dockerfile: Dockerfile
       args:
         SERVICE: publisher
+    networks:
+      - TaskflowNetwork
     env_file:
       - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    command: ["python", "src/main.py"]
 
   worker:
+#    container_name: workflow_worker
     build:
       context: .
       dockerfile: Dockerfile
       args:
         SERVICE: worker
+    networks:
+      - TaskflowNetwork
     env_file:
       - .env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    command: ["python", "src/main.py"]
+
+  topology:
+    container_name: workflow_topology
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: topology
+    networks:
+      - TaskflowNetwork
+    env_file:
+      - .env
+    command: ["python", "src/setup.py"]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+
+networks:
+  TaskflowNetwork:
+    external: true

@@ -15,7 +15,6 @@ COPY ${SERVICE}/src/ ./src/
 
 RUN uv sync --locked
 
-ENV PYTHONPATH=/app
-ENV PATH="/app/${SERVICE}/.venv/bin:$PATH"
+ENV PYTHONPATH=/app/${SERVICE}
 
-CMD ["python", "src/main.py"]
+ENV PATH="/app/${SERVICE}/.venv/bin:$PATH"

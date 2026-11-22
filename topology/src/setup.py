@@ -1,9 +1,7 @@
 import asyncio
 
-
-from taskflow_shared.rmq.connection import connect, disconnect, get_rmq_conn
-
 from src.topology import fill_up_rmq
+from taskflow_shared.rmq.connection import connect, disconnect, get_rmq_conn
 
 
 async def main():
@@ -12,5 +10,5 @@ async def main():
     await disconnect()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
