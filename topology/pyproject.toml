@@ -1,5 +1,12 @@
 [project]
-name = "taskflow-topology"
+name = "workflow-topology"
 version = "0.1.0"
 requires-python = ">=3.12"
+dependencies = [
+    "aio-pika>=10.2.3",
+    "icecream>=2.2.0",
+    "taskflow-shared",
+]
 
+[tool.uv.sources]
+taskflow-shared = { path = "../shared", editable = true }

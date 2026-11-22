@@ -1,10 +1,16 @@
-import aio_pika
+import asyncio
+
+
+from taskflow_shared.rmq.connection import connect, disconnect, get_rmq_conn
+
+from src.topology import fill_up_rmq
 
 
 async def main():
-    connection = aio_pika.connect_robust(
-        url=""
-    )
+    await connect()
+    await fill_up_rmq(connection=get_rmq_conn())
+    await disconnect()
+
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
